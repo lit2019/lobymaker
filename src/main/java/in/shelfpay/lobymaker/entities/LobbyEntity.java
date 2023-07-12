@@ -19,6 +19,6 @@ public class LobbyEntity extends BaseEntity{
     private String title;
 
     @Column(nullable = false)
-    private Integer adminId;
+    private Long adminId;
 
 }

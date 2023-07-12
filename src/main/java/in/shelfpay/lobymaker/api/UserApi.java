@@ -39,6 +39,7 @@ public class UserApi {
             return ResponseEntity.badRequest().body("Invalid username or password");
         }
         UserUtil.username = userForm.getUsername();
+        UserUtil.userId = existingUser.getId();
 
         return ResponseEntity.ok("Login successful");
     }

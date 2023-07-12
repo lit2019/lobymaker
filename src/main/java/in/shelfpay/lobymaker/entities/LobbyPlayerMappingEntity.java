@@ -2,8 +2,12 @@ package in.shelfpay.lobymaker.entities;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "lobby_player_mappings",
         uniqueConstraints = {@UniqueConstraint(name = "lobby-player", columnNames = {"lobbyId", "playerId"})}
@@ -15,12 +19,13 @@ public class LobbyPlayerMappingEntity extends BaseEntity{
     private Long id;
 
     @Column(nullable = false)
-    private Integer lobbyId;
+    private Long lobbyId;
 
     @Column(nullable = false)
-    private Integer playerId;
+    private Long playerId;
 
-//    @Column(nullable = false)
-//    private InviteStatus inviteStatus;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private InviteStatus inviteStatus;
 
 }
