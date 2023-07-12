@@ -1,0 +1,10 @@
+package in.shelfpay.lobymaker.dao;
+
+import in.shelfpay.lobymaker.entities.LobbyEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface LobbyRepository extends JpaRepository<LobbyEntity, Long> {
+    // Custom methods for querying lobbies
+}
