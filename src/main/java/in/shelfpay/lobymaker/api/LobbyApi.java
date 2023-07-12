@@ -3,7 +3,6 @@ package in.shelfpay.lobymaker.api;
 
 import in.shelfpay.lobymaker.dao.LobbyPlayerMappingRepository;
 import in.shelfpay.lobymaker.dao.LobbyRepository;
-import in.shelfpay.lobymaker.dao.UserRepository;
 import in.shelfpay.lobymaker.entities.InviteStatus;
 import in.shelfpay.lobymaker.entities.LobbyEntity;
 import in.shelfpay.lobymaker.entities.LobbyPlayerMappingEntity;
@@ -23,7 +22,7 @@ public class LobbyApi {
     private LobbyRepository lobbyRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserApi userApi;
 
     @Autowired
     private LobbyPlayerMappingRepository lobbyPlayerMappingRepository;
@@ -31,22 +30,24 @@ public class LobbyApi {
     public void createLobby(LobbyForm lobbyForm) {
         LobbyEntity lobbyEntity = new LobbyEntity();
         lobbyEntity.setTitle(lobbyForm.getTitle());
-        lobbyEntity.setAdminId(lobbyForm.getAdminId());
+        lobbyEntity.setAdminId(UserUtil.userId);
         lobbyRepository.save(lobbyEntity);
     }
 
-    public void sendInvite(Long lobbyId, Long userId) throws ApiException {
+    public void sendInvite(Long lobbyId, String username) throws ApiException {
         if (Objects.isNull(lobbyRepository.findByIdAndAdminId(lobbyId, UserUtil.userId))){
             throw new ApiException("lobby not found");
         }
-        LobbyPlayerMappingEntity lobbyPlayerMappingEntity = lobbyPlayerMappingRepository.findByLobbyIdAndPlayerId(lobbyId, userId);
+        UserEntity invitee = userApi.getByUsername(username);
+        LobbyPlayerMappingEntity lobbyPlayerMappingEntity = lobbyPlayerMappingRepository.findByLobbyIdAndPlayerId(lobbyId, invitee.getId());
         if (Objects.nonNull(lobbyPlayerMappingEntity)){
             throw new ApiException("invite already sent");
         }
         lobbyPlayerMappingEntity = new LobbyPlayerMappingEntity();
         lobbyPlayerMappingEntity.setLobbyId(lobbyId);
-        lobbyPlayerMappingEntity.setPlayerId(userId);
+        lobbyPlayerMappingEntity.setPlayerId(invitee.getId());
         lobbyPlayerMappingEntity.setInviteStatus(InviteStatus.SENT);
+        lobbyPlayerMappingRepository.save(lobbyPlayerMappingEntity);
     }
 
     public void updateInvitation(Long lobbyId, InviteStatus inviteStatus) throws ApiException {
@@ -69,7 +70,7 @@ public class LobbyApi {
         List<Long> userIds = lobbyPlayerMappingEntities.stream().map(LobbyPlayerMappingEntity::getPlayerId).collect(Collectors.toList());
         userIds.add(lobbyEntity.getAdminId());
 
-        List<UserEntity> userEntities = userRepository.findByIds(userIds);
+        List<UserEntity> userEntities = userApi.findByIdIn(userIds);
         return userEntities;
     }
 
@@ -86,5 +87,16 @@ public class LobbyApi {
         if((Objects.isNull(lobbyRepository.findByIdAndAdminId(lobbyId, userId))) && Objects.isNull(lobbyPlayerMappingRepository.findByLobbyIdAndPlayerId(lobbyId, userId))){
             throw new ApiException("you're not a member");
         }
+    }
+
+    public List<LobbyEntity> getAllLobbies(Boolean isAdmin) {
+        List<LobbyEntity> lobbyEntities = lobbyRepository.findByAdminIdIn(UserUtil.userId);
+        if (isAdmin){
+            return lobbyEntities;
+        }
+        List<LobbyPlayerMappingEntity> lobbyMappings = lobbyPlayerMappingRepository.findByPlayerIdIn(UserUtil.userId);
+        List<Long> lobbyIds = lobbyMappings.stream().map(LobbyPlayerMappingEntity::getLobbyId).collect(Collectors.toList());
+        lobbyEntities.addAll(lobbyRepository.findByIdIn(lobbyIds));
+        return lobbyEntities;
     }
 }

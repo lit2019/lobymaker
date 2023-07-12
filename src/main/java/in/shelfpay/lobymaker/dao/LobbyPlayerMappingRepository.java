@@ -15,4 +15,5 @@ public interface LobbyPlayerMappingRepository extends JpaRepository<LobbyPlayerM
 
     List<LobbyPlayerMappingEntity> findByLobbyIdAndInviteStatus(Long lobbyId, InviteStatus inviteStatus);
 
+    List<LobbyPlayerMappingEntity> findByPlayerIdIn(Long playerId);
 }

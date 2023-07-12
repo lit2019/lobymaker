@@ -6,6 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LobbyForm {
-    private Long adminId;
     private String title;
 }

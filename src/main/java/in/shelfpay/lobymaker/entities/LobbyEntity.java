@@ -8,8 +8,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "lobbies")
+@Table(name = "lobbies", uniqueConstraints  = {@UniqueConstraint(name = "lobby-admin", columnNames = {"id", "adminId"})})
 @EntityListeners(AuditingEntityListener.class)
+
 public class LobbyEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

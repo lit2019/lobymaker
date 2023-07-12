@@ -10,7 +10,6 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByUsername(String username);
 
-    List<UserEntity> findByIds(List<Long> ids);
-
-    // Custom methods for querying lobbies
+    public List<UserEntity> findByIdIn(List<Long> ids);
+    
 }

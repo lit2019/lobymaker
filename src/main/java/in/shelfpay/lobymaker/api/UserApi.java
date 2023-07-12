@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 //    TODO: return mav for homepage instead
 
 @Service
@@ -31,7 +33,7 @@ public class UserApi {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    public ResponseEntity<String> login(@RequestBody UserForm userForm) {
+    public ResponseEntity<String> login(UserForm userForm) {
         UserEntity existingUser = userRepository.findByUsername(userForm.getUsername());
 
         // Check if the user exists and the password matches
@@ -44,4 +46,11 @@ public class UserApi {
         return ResponseEntity.ok("Login successful");
     }
 
+    public List<UserEntity> findByIdIn(List<Long> userIds) {
+        return userRepository.findByIdIn(userIds);
+    }
+
+    public UserEntity getByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }
