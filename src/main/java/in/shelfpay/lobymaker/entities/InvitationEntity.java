@@ -9,11 +9,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Setter
 @Entity
-@Table(name = "lobby_player_mappings",
-        uniqueConstraints = {@UniqueConstraint(name = "lobby-player", columnNames = {"lobbyId", "playerId"})}
+@Table(name = "invitations",
+        uniqueConstraints = {@UniqueConstraint(name = "lobby-sender-receiver", columnNames = {"lobbyId", "senderId", "receiverId"})}
 )
 @EntityListeners(AuditingEntityListener.class)
-public class LobbyPlayerMappingEntity extends BaseEntity{
+public class InvitationEntity extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +22,10 @@ public class LobbyPlayerMappingEntity extends BaseEntity{
     private Long lobbyId;
 
     @Column(nullable = false)
-    private Long playerId;
+    private Long receiverId;
+
+    @Column(nullable = false)
+    private Long senderId;
 
     @Column
     @Enumerated(EnumType.STRING)

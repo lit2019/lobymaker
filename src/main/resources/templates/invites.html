@@ -1,0 +1,42 @@
+
+
+<!DOCTYPE html>
+<!--<html xmlns:th="http://www.w3.org/1999/xhtml">-->
+<head>
+    <head th:replace="snippets.html :: name_head"></head>
+
+</head>
+<body>
+<nav th:replace="snippets.html :: name_app_navbar"></nav>
+<div class="container">
+
+    <div class="row">
+
+        <!-- Table -->
+        <div class="col-12">
+            <table class="table table-striped" id="invites-table">
+                <thead>
+                <tr>
+                    <th scope="col">createdAt</th>
+                    <th scope="col">senderUsername</th>
+                    <th scope="col">lobbyTitle</th>
+                    <th scope="col">inviteStatus</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+</body>
+<footer th:replace="snippets.html :: name_footer"></footer>
+
+<script src="/invites.js"/>
+</script>
+</html>

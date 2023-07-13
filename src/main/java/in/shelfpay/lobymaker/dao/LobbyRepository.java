@@ -11,7 +11,7 @@ public interface LobbyRepository extends JpaRepository<LobbyEntity, Long> {
     // Custom methods for querying lobbies
     LobbyEntity findByIdAndAdminId(Long id, Long adminId);
 
-    List<LobbyEntity> findByAdminIdIn(Long userId);
+    List<LobbyEntity> findByAdminId(Long userId);
 
 
     List<LobbyEntity> findByIdIn(List<Long> lobbyIds);

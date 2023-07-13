@@ -53,4 +53,8 @@ public class UserApi {
     public UserEntity getByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    public UserEntity getById(Long adminId) {
+        return userRepository.getById(adminId);
+    }
 }

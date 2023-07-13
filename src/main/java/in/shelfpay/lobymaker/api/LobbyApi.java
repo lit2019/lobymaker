@@ -1,16 +1,20 @@
 package in.shelfpay.lobymaker.api;
 
 
-import in.shelfpay.lobymaker.dao.LobbyPlayerMappingRepository;
+import in.shelfpay.lobymaker.controller.InvitationData;
+import in.shelfpay.lobymaker.dao.InvitationRepository;
 import in.shelfpay.lobymaker.dao.LobbyRepository;
 import in.shelfpay.lobymaker.entities.InviteStatus;
 import in.shelfpay.lobymaker.entities.LobbyEntity;
-import in.shelfpay.lobymaker.entities.LobbyPlayerMappingEntity;
+import in.shelfpay.lobymaker.entities.InvitationEntity;
 import in.shelfpay.lobymaker.entities.UserEntity;
+import in.shelfpay.lobymaker.model.LobbyData;
 import in.shelfpay.lobymaker.model.LobbyForm;
+import in.shelfpay.lobymaker.utils.ConvertUtils;
 import in.shelfpay.lobymaker.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +29,7 @@ public class LobbyApi {
     private UserApi userApi;
 
     @Autowired
-    private LobbyPlayerMappingRepository lobbyPlayerMappingRepository;
+    private InvitationRepository invitationRepository;
 
     public void createLobby(LobbyForm lobbyForm) {
         LobbyEntity lobbyEntity = new LobbyEntity();
@@ -35,46 +39,66 @@ public class LobbyApi {
     }
 
     public void sendInvite(Long lobbyId, String username) throws ApiException {
-        if (Objects.isNull(lobbyRepository.findByIdAndAdminId(lobbyId, UserUtil.userId))){
-            throw new ApiException("lobby not found");
+        checkIfLobbyMember(lobbyId, UserUtil.userId);
+        UserEntity receiver = userApi.getByUsername(username);
+
+        InvitationEntity invitationEntity = invitationRepository.findBySenderIdAndReceiverIdAndLobbyId(UserUtil.userId, receiver.getId(), lobbyId);
+        if (Objects.nonNull(invitationEntity)){
+            throw new ApiException(String.format("invite already sent to %s", username));
         }
-        UserEntity invitee = userApi.getByUsername(username);
-        LobbyPlayerMappingEntity lobbyPlayerMappingEntity = lobbyPlayerMappingRepository.findByLobbyIdAndPlayerId(lobbyId, invitee.getId());
-        if (Objects.nonNull(lobbyPlayerMappingEntity)){
-            throw new ApiException("invite already sent");
-        }
-        lobbyPlayerMappingEntity = new LobbyPlayerMappingEntity();
-        lobbyPlayerMappingEntity.setLobbyId(lobbyId);
-        lobbyPlayerMappingEntity.setPlayerId(invitee.getId());
-        lobbyPlayerMappingEntity.setInviteStatus(InviteStatus.SENT);
-        lobbyPlayerMappingRepository.save(lobbyPlayerMappingEntity);
+
+        invitationEntity = new InvitationEntity();
+        invitationEntity.setLobbyId(lobbyId);
+        invitationEntity.setReceiverId(receiver.getId());
+        invitationEntity.setInviteStatus(InviteStatus.SENT);
+        invitationEntity.setSenderId(UserUtil.userId);
+        invitationRepository.save(invitationEntity);
     }
 
-    public void updateInvitation(Long lobbyId, InviteStatus inviteStatus) throws ApiException {
-        LobbyEntity lobbyEntity = getCheckLobbyById(lobbyId);
+    public void update(Long inviteId, InviteStatus inviteStatus) throws ApiException {
+//        check the max limit
+//        if status is sent then he/she can accept or decline
+//        if status is declined/revoke/accepted he can't do anything
 
-        LobbyPlayerMappingEntity lobbyPlayerMappingEntity = lobbyPlayerMappingRepository.findByLobbyIdAndPlayerId(lobbyId, UserUtil.userId);
-        if (Objects.isNull(lobbyPlayerMappingEntity)){
-            throw new ApiException("no invite was initialy sent to you for this lobby");
+        InvitationEntity invitationEntity = getCheckInvitationById(inviteId);
+        if(!invitationEntity.getReceiverId().equals(UserUtil.userId)) throw new ApiException("not invited");
+
+        LobbyEntity lobbyEntity = getCheckLobbyById(invitationEntity.getLobbyId());
+        checkNotIfLobbyMember(lobbyEntity.getId(), UserUtil.userId);
+
+        if(invitationEntity.getInviteStatus().equals(InviteStatus.SENT)){
+            if(getMembers(lobbyEntity.getId()).size()<3){
+                invitationEntity.setInviteStatus(inviteStatus);
+            }else {
+                throw new ApiException("lobby is full, try again later");
+            }
         }
-        lobbyPlayerMappingEntity.setInviteStatus(inviteStatus);
-
-        lobbyPlayerMappingRepository.save(lobbyPlayerMappingEntity);
+        invitationEntity.setInviteStatus(inviteStatus);
+        invitationRepository.save(invitationEntity);
     }
+//TODO add an end point to revoke invitiation
+    private InvitationEntity getCheckInvitationById(Long inviteId) throws ApiException {
+        InvitationEntity invite = invitationRepository.getById(inviteId);
+        if(Objects.isNull(invite)){
+            throw new ApiException("invitation not found");
+        }
+        return invite;
+    }
+
 
     public List<UserEntity> getMembers(Long lobbyId) throws ApiException {
         LobbyEntity lobbyEntity = getCheckLobbyById(lobbyId);
-        checkIfMember(lobbyId, UserUtil.userId);
+        checkIfLobbyMember(lobbyId, UserUtil.userId);
 
-        List<LobbyPlayerMappingEntity> lobbyPlayerMappingEntities = lobbyPlayerMappingRepository.findByLobbyIdAndInviteStatus(lobbyId, InviteStatus.ACCEPTED);
-        List<Long> userIds = lobbyPlayerMappingEntities.stream().map(LobbyPlayerMappingEntity::getPlayerId).collect(Collectors.toList());
+        List<InvitationEntity> lobbyPlayerMappingEntities = invitationRepository.findByLobbyIdAndInviteStatus(lobbyId, InviteStatus.ACCEPTED);
+        List<Long> userIds = lobbyPlayerMappingEntities.stream().map(InvitationEntity::getReceiverId).collect(Collectors.toList());
         userIds.add(lobbyEntity.getAdminId());
 
         List<UserEntity> userEntities = userApi.findByIdIn(userIds);
         return userEntities;
     }
 
-    private LobbyEntity getCheckLobbyById(Long lobbyId) throws ApiException {
+    public LobbyEntity getCheckLobbyById(Long lobbyId) throws ApiException {
         LobbyEntity lobbyEntity = lobbyRepository.getById(lobbyId);
         if (Objects.isNull(lobbyEntity)){
             throw new ApiException("lobby not found");
@@ -83,20 +107,46 @@ public class LobbyApi {
     }
 
     //    throws exception if not member or admin of the lobby
-    private void checkIfMember(Long lobbyId, Long userId) throws ApiException {
-        if((Objects.isNull(lobbyRepository.findByIdAndAdminId(lobbyId, userId))) && Objects.isNull(lobbyPlayerMappingRepository.findByLobbyIdAndPlayerId(lobbyId, userId))){
-            throw new ApiException("you're not a member");
+    public List<LobbyData> getAllLobbies(Boolean isAdmin) throws IllegalAccessException, InstantiationException {
+        List<LobbyEntity> lobbyEntities = lobbyRepository.findByAdminId(UserUtil.userId);
+        if (isAdmin){
+            return convert(lobbyEntities);
+        }
+        List<InvitationEntity> lobbyMappings = invitationRepository.findByReceiverIdAndInviteStatus(UserUtil.userId, InviteStatus.ACCEPTED);
+        List<Long> lobbyIds = lobbyMappings.stream().map(InvitationEntity::getLobbyId).collect(Collectors.toList());
+        lobbyEntities.addAll(lobbyRepository.findByIdIn(lobbyIds));
+
+        return convert(lobbyEntities);
+    }
+    private void checkIfLobbyMember(Long lobbyId, Long userId) throws ApiException {
+        if((Objects.isNull(lobbyRepository.findByIdAndAdminId(lobbyId, userId)))
+                && Objects.isNull(invitationRepository.findByLobbyIdAndReceiverIdAndInviteStatus(lobbyId, userId, InviteStatus.ACCEPTED))){
+            throw new ApiException("not a member");
         }
     }
 
-    public List<LobbyEntity> getAllLobbies(Boolean isAdmin) {
-        List<LobbyEntity> lobbyEntities = lobbyRepository.findByAdminIdIn(UserUtil.userId);
-        if (isAdmin){
-            return lobbyEntities;
+    private void checkNotIfLobbyMember(Long lobbyId, Long userId) throws ApiException {
+        if((Objects.nonNull(lobbyRepository.findByIdAndAdminId(lobbyId, userId)))
+                || !CollectionUtils.isEmpty(invitationRepository.findByLobbyIdAndReceiverIdAndInviteStatus(lobbyId, userId, InviteStatus.ACCEPTED))){
+            throw new ApiException("you're a member");
         }
-        List<LobbyPlayerMappingEntity> lobbyMappings = lobbyPlayerMappingRepository.findByPlayerIdIn(UserUtil.userId);
-        List<Long> lobbyIds = lobbyMappings.stream().map(LobbyPlayerMappingEntity::getLobbyId).collect(Collectors.toList());
-        lobbyEntities.addAll(lobbyRepository.findByIdIn(lobbyIds));
-        return lobbyEntities;
+    }
+
+    private List<LobbyData> convert(List<LobbyEntity> lobbyEntities) throws IllegalAccessException, InstantiationException {
+        List<LobbyData> lobbyDataList = ConvertUtils.convertList(lobbyEntities, LobbyData.class);
+        for (LobbyData lobbyData : lobbyDataList) {
+            Long adminId = lobbyData.getAdminId();
+            lobbyData.setAdminUsername(userApi.getById(adminId).getUsername());
+        }
+        return lobbyDataList;
+    }
+
+    public List<InvitationData> getAllInvitations() throws IllegalAccessException, InstantiationException, ApiException {
+        List<InvitationData> invitations = ConvertUtils.convertList(invitationRepository.findByReceiverId(UserUtil.userId), InvitationData.class);
+        for (InvitationData invitation : invitations) {
+            invitation.setSenderUsername(userApi.getById(invitation.getSenderId()).getUsername());
+            invitation.setLobbyTitle(getCheckLobbyById(invitation.getLobbyId()).getTitle());
+        }
+        return invitations;
     }
 }

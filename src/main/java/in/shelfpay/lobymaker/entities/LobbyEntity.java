@@ -20,6 +20,6 @@ public class LobbyEntity extends BaseEntity{
     private String title;
 
     @Column(nullable = false)
-    private Long adminId;
+    private Long adminId;  //here admin id is the user's id who has created the loby
 
 }
