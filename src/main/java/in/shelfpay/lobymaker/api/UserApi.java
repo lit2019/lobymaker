@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Objects;
 
 import static in.shelfpay.lobymaker.controller.UIController.mav;
 
@@ -59,11 +60,16 @@ public class UserApi {
         return userRepository.findByIdIn(userIds);
     }
 
-    public UserEntity getByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 
     public UserEntity getById(Long adminId) {
         return userRepository.getById(adminId);
+    }
+
+    public UserEntity getCheckByUsername(String username) throws ApiException {
+        UserEntity user = userRepository.findByUsername(username);
+        if (Objects.isNull(user)){
+            throw new ApiException(username+" not found");
+        }
+        return user;
     }
 }

@@ -1,6 +1,5 @@
 package in.shelfpay.lobymaker.dao;
 
-import in.shelfpay.lobymaker.controller.InvitationData;
 import in.shelfpay.lobymaker.entities.InviteStatus;
 import in.shelfpay.lobymaker.entities.InvitationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +12,6 @@ public interface InvitationRepository extends JpaRepository<InvitationEntity, Lo
     // Custom methods for querying lobbies
     InvitationEntity findBySenderIdAndReceiverIdAndLobbyId(Long senderId, Long receiverId, Long lobbyId);
 
-    List<InvitationEntity> findByLobbyId(Long lobbyId);
-
     List<InvitationEntity> findByLobbyIdAndInviteStatus(Long lobbyId, InviteStatus inviteStatus);
 
 
@@ -24,4 +21,9 @@ public interface InvitationRepository extends JpaRepository<InvitationEntity, Lo
 
     List<InvitationEntity> findByReceiverId(Long userId);
 
+    List<InvitationEntity> findBySenderIdAndInviteStatusOrderByCreatedAtDesc(Long senderId, InviteStatus inviteStatus);
+
+    List<InvitationEntity> findBySenderIdOrderByCreatedAtDesc(Long senderId);
+
+    List<InvitationEntity> findByReceiverIdAndInviteStatusOrderByCreatedAtDesc(Long receiverId, InviteStatus inviteStatus);
 }

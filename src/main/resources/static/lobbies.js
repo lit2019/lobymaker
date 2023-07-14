@@ -31,7 +31,7 @@ function displayLobbyList(data) {
         var e = data[i];
         var buttonHtml = '<td><button class="btn" onclick="displayLobbyMembers(' + e.id + ')"><i class="fa fa-chevron-circle-down"></i>&nbsp;&nbsp;&nbsp;Show Members</button></td>';
         var row = '<tr>' +
-            '<td>' + e.createdAt + '</td>' +
+            '<td>' + convertDate(e.createdAt) + '</td>' +
             '<td>' + e.title + '</td>' +
             '<td>' + e.adminUsername + '</td>' +
             buttonHtml +

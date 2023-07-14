@@ -1,0 +1,60 @@
+
+
+<!DOCTYPE html>
+<!--<html xmlns:th="http://www.w3.org/1999/xhtml">-->
+<head>
+  <head th:replace="snippets.html :: name_head"></head>
+<title>Invitations Sent</title>
+</head>
+<body>
+<nav th:replace="snippets.html :: name_app_navbar"></nav>
+<div th:replace="snippets.html :: name_toast"></div>
+
+<div class="container">
+  <h3>Invitations Sent</h3>
+  <div class="row">
+
+    <div style="padding: 10px;" class="col-md-3">
+      <label for="status">Status</label>
+      <select id="status" name="status" onchange="refreshTable()">
+        <option value="null">Any</option>
+        <option value="SENT">Sent</option>
+        <option value="ACCEPTED">Accepted</option>
+        <option value="DECLINED">Declined</option>
+        <option value="REVOKED">Revoked</option>
+      </select>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="refreshTable()" style="margin: 10px;">Refresh</button>
+  </div>
+  <div class="row">
+
+    <!-- Table -->
+    <div class="col-12">
+      <table class="table table-striped" id="invites-table">
+        <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">To</th>
+          <th scope="col">Status</th>
+          <th scope="col">lobby</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+
+
+</div>
+
+</body>
+<footer th:replace="snippets.html :: name_footer"></footer>
+
+<script src="/invitaions_sent.js"/>
+</script>
+</html>

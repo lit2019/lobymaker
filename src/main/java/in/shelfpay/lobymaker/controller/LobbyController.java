@@ -43,9 +43,14 @@ public class LobbyController {
         lobbyApi.revokeInvitation(inviteId);
     }
 
-    @GetMapping("/invitation/get")
-    public List<InvitationData> getInvitations() throws IllegalAccessException, InstantiationException, ApiException {
-        return lobbyApi.getAllInvitations();
+    @GetMapping("/invitation/received")
+    public List<InvitationData> getReceivedInvitations() throws IllegalAccessException, InstantiationException, ApiException {
+        return lobbyApi.getReceivedInvitations();
+    }
+
+    @GetMapping("/invitation/sent")
+    public List<InvitationData> getSentInvitations(@RequestParam(name = "status", required = false) InviteStatus status) throws IllegalAccessException, InstantiationException, ApiException {
+        return lobbyApi.getSentInvitations(status);
     }
 
     @GetMapping("/members/{lobbyId}")

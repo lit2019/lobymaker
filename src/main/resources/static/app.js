@@ -36,7 +36,21 @@ function makeToast(isSuccessful, message, downloadFunction){
 
     toastElement.show();
 }
+function convertDate(date){
+const utcTimestamp = new Date(date);
+const options = {
+  timeZone: "Asia/Kolkata",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit"
+};
 
+const istDateString = utcTimestamp.toLocaleString("en-IN", options);
+console.log(istDateString);
+return istDateString;
+}
 
 
 

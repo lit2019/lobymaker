@@ -17,6 +17,12 @@ public class UIController {
     public ModelAndView invitesPage() {
         return mav("invites", info);
     }
+
+    @RequestMapping("/ui/invitations/sent")
+    public ModelAndView sentInvitesPage() {
+        return mav("invitations_sent", info);
+    }
+
     @RequestMapping("/ui/lobbies")
     public ModelAndView lobbiesPage() {
         return mav("lobbies", info);
