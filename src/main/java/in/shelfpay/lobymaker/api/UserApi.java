@@ -39,7 +39,7 @@ public class UserApi {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    public ModelAndView login(UserForm userForm) throws ApiException {
+    public ResponseEntity<String> login(UserForm userForm) throws ApiException {
         UserEntity existingUser = userRepository.findByUsername(userForm.getUsername());
 
         // Check if the user exists and the password matches
@@ -47,7 +47,8 @@ public class UserApi {
             throw new ApiException("Invalid username or password");
         }
         UserUtil.login(existingUser);
-        return mav("lobbies", info);
+        return ResponseEntity.ok("login successfully");
+
     }
 
     public ModelAndView logout() {

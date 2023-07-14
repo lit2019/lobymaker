@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ModelAndView login(@RequestBody UserForm userForm) throws ApiException {
+    public ResponseEntity<String> login(@RequestBody UserForm userForm) throws ApiException {
         return userApi.login(userForm);
     }
 
