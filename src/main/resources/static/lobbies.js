@@ -1,7 +1,7 @@
 function getLobbySearchUrl(){
     return "/lobby/get/"
 }
-
+var currentLobbyId = null;
 function getAllLobbies(){
     console.log("getting lobbies")
 	var url = getLobbySearchUrl()+"false";
@@ -40,6 +40,7 @@ function displayLobbyList(data) {
     }
 }
 function displayLobbyMembers(lobbyId) {
+    currentLobbyId = lobbyId;
     var url = "/lobby/members/" + lobbyId;
     console.log(url)
     $.ajax({
@@ -64,7 +65,7 @@ function displayLobbyMembers(lobbyId) {
         },
         error: function (error) {
             message = error.responseJSON.message;
-            makeToast(false, message, downloadErrors);
+            makeToast(false, message, null);
         }
     });
 }
@@ -91,12 +92,36 @@ function createNewLobby() {
         },
         error: function (error) {
             message = error.responseJSON.message;
-            makeToast(false, message, downloadErrors);
+            makeToast(false, message, null);
+        }
+    });
+}
+function invite() {
+    var username = $('#username-input').val();
+
+    // Perform validation if needed
+
+    lobbyId = currentLobbyId
+
+    $.ajax({
+        url: '/lobby/invite/'+lobbyId+'/'+username,
+        type: 'GET',
+        contentType: 'application/json',
+        success: function () {
+            // Handle success, such as refreshing the lobby list
+
+            makeToast(true, "invite sent", null);
+
+        },
+        error: function (error) {
+            message = error.responseJSON.message;
+            makeToast(false, message, null);
         }
     });
 }
 
 // ...
+
 
 
 function init(){

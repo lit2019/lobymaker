@@ -2,7 +2,6 @@ package in.shelfpay.lobymaker.controller;
 
 import in.shelfpay.lobymaker.api.ApiException;
 import in.shelfpay.lobymaker.api.LobbyApi;
-import in.shelfpay.lobymaker.entities.InvitationEntity;
 import in.shelfpay.lobymaker.entities.InviteStatus;
 import in.shelfpay.lobymaker.entities.UserEntity;
 import in.shelfpay.lobymaker.model.LobbyData;
@@ -36,7 +35,12 @@ public class LobbyController {
 
     @PutMapping("/invitation/update/{inviteId}/{inviteStatus}")
     public void updateInvitation(@PathVariable Long inviteId, @PathVariable InviteStatus inviteStatus) throws ApiException {
-        lobbyApi.update(inviteId, inviteStatus);
+        lobbyApi.updateInvitation(inviteId, inviteStatus);
+    }
+
+    @PutMapping("/invitation/revoke/{inviteId}")
+    public void revokeInvitation(@PathVariable Long inviteId) throws ApiException {
+        lobbyApi.revokeInvitation(inviteId);
     }
 
     @GetMapping("/invitation/get")
@@ -48,8 +52,5 @@ public class LobbyController {
     public List<UserEntity> getLobbyMembers(@PathVariable Long lobbyId) throws ApiException {
         return lobbyApi.getMembers(lobbyId);
     }
-
-
-
 
 }

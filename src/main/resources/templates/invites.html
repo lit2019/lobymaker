@@ -8,6 +8,8 @@
 </head>
 <body>
 <nav th:replace="snippets.html :: name_app_navbar"></nav>
+<div th:replace="snippets.html :: name_toast"></div>
+
 <div class="container">
 
     <div class="row">
@@ -17,10 +19,10 @@
             <table class="table table-striped" id="invites-table">
                 <thead>
                 <tr>
-                    <th scope="col">createdAt</th>
-                    <th scope="col">senderUsername</th>
-                    <th scope="col">lobbyTitle</th>
-                    <th scope="col">inviteStatus</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">From</th>
+                    <th scope="col">lobby</th>
+                    <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>

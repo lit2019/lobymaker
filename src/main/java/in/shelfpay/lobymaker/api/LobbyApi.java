@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ public class LobbyApi {
     public void sendInvite(Long lobbyId, String username) throws ApiException {
         checkIfLobbyMember(lobbyId, UserUtil.userId);
         UserEntity receiver = userApi.getByUsername(username);
+        checkNotIfLobbyMember(lobbyId, receiver.getId());
 
         InvitationEntity invitationEntity = invitationRepository.findBySenderIdAndReceiverIdAndLobbyId(UserUtil.userId, receiver.getId(), lobbyId);
         if (Objects.nonNull(invitationEntity)){
@@ -55,7 +57,7 @@ public class LobbyApi {
         invitationRepository.save(invitationEntity);
     }
 
-    public void update(Long inviteId, InviteStatus inviteStatus) throws ApiException {
+    public void updateInvitation(Long inviteId, InviteStatus inviteStatus) throws ApiException {
 //        check the max limit
 //        if status is sent then he/she can accept or decline
 //        if status is declined/revoke/accepted he can't do anything
@@ -142,11 +144,21 @@ public class LobbyApi {
     }
 
     public List<InvitationData> getAllInvitations() throws IllegalAccessException, InstantiationException, ApiException {
-        List<InvitationData> invitations = ConvertUtils.convertList(invitationRepository.findByReceiverId(UserUtil.userId), InvitationData.class);
-        for (InvitationData invitation : invitations) {
-            invitation.setSenderUsername(userApi.getById(invitation.getSenderId()).getUsername());
+        List<InvitationEntity> invitationEntities = invitationRepository.findByReceiverIdAndInviteStatus(UserUtil.userId, InviteStatus.SENT);
+
+        List<InvitationData> invitations = new ArrayList<>();
+        for (InvitationEntity invitationEntity : invitationEntities) {
+            checkNotIfLobbyMember(invitationEntity.getLobbyId(), UserUtil.userId);
+
+            InvitationData invitation = ConvertUtils.convert(invitationEntity, InvitationData.class);
+            invitation.setSenderUsername(userApi.getById(invitationEntity.getSenderId()).getUsername());
             invitation.setLobbyTitle(getCheckLobbyById(invitation.getLobbyId()).getTitle());
+            invitations.add(invitation);
         }
         return invitations;
+    }
+
+    public void revokeInvitation(Long inviteId) {
+        
     }
 }

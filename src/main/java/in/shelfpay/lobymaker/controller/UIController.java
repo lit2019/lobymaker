@@ -15,15 +15,20 @@ public class UIController {
 
     @RequestMapping("/ui/invites")
     public ModelAndView invitesPage() {
-        return mav("invites");
+        return mav("invites", info);
     }
     @RequestMapping("/ui/lobbies")
     public ModelAndView lobbiesPage() {
-        return mav("lobbies");
+        return mav("lobbies", info);
+    }
+
+    @RequestMapping("/ui/login")
+    public ModelAndView login() {
+        return mav("login", info);
     }
 
 
-    protected ModelAndView mav(String page) {
+    public static ModelAndView mav(String page, InfoData info) {
         // Get current user
 
         info.setUsername(UserUtil.username == null ? "" : UserUtil.username);

@@ -5,6 +5,8 @@
 
 </head>
 <body>
+<div th:replace="snippets.html :: name_toast"></div>
+
 <nav th:replace="snippets.html :: name_app_navbar"></nav>
 <div class="container">
 
@@ -65,11 +67,15 @@
                 <div class="modal-body">
                     <table class="table">
                         <thead>
-                        <tr>
-                            <th scope="col">Username</th>
-                        </tr>
                         </thead>
                         <tbody id="lobby-members-table-body">
+                        <tr>
+                            <form  >
+                                <input  type="text" id="username-input" name="input" placeholder="Enter Username">
+                                <button class="btn curvy-button" type="submit" onclick="invite()" >Invite</button>
+                            </form>
+
+                        </tr>
                         </tbody>
                     </table>
                 </div>
