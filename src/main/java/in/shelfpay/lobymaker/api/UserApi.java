@@ -2,6 +2,7 @@ package in.shelfpay.lobymaker.api;
 
 import in.shelfpay.lobymaker.dao.UserRepository;
 import in.shelfpay.lobymaker.entities.UserEntity;
+import in.shelfpay.lobymaker.jwt.JwtTokenUtil;
 import in.shelfpay.lobymaker.model.InfoData;
 import in.shelfpay.lobymaker.model.UserForm;
 import in.shelfpay.lobymaker.utils.UserUtil;
@@ -22,8 +23,12 @@ public class UserApi {
 
     @Autowired
     private InfoData info;
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     public ResponseEntity<String> signup(UserForm userForm) {
         // Check if the username already exists
@@ -72,5 +77,11 @@ public class UserApi {
             throw new ApiException(username+" not found");
         }
         return user;
+    }
+
+    public Long getUserIdFromToken(String jwtToken) throws ApiException {
+        UserEntity userEntity = getCheckByUsername(jwtTokenUtil.getUsernameFromToken(jwtToken));
+        return userEntity.getId();
+
     }
 }

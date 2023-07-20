@@ -13,6 +13,7 @@ public interface LobbyRepository extends JpaRepository<LobbyEntity, Long> {
 
     List<LobbyEntity> findByAdminId(Long userId);
 
-
     List<LobbyEntity> findByIdIn(List<Long> lobbyIds);
+
+    LobbyEntity getById(Long lobbyId);
 }

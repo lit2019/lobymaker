@@ -1,10 +1,10 @@
 package in.shelfpay.lobymaker.entities;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
-import jakarta.persistence.*;
 
 @MappedSuperclass
 @Getter
@@ -26,3 +26,4 @@ public class BaseEntity {
         this.updatedAt = ZonedDateTime.now();
     }
 }
+//todo packages, reason database

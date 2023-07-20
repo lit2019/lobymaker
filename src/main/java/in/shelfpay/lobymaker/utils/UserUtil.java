@@ -8,12 +8,12 @@ public class UserUtil {
 
     public static void logout() {
         UserUtil.username = null;
-        UserUtil.userId = null;
+//        UserUtil.userId = null;
     }
 
     public static void login(UserEntity userEntity) {
         UserUtil.username = userEntity.getUsername();
-        UserUtil.userId = userEntity.getId();
+//        UserUtil.userId = userEntity.getId();
     }
 
 }

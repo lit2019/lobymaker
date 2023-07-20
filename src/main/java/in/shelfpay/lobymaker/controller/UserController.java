@@ -36,4 +36,5 @@ public class UserController {
     public ModelAndView logout() {
         return userApi.logout();
     }
+
 }
