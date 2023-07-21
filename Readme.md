@@ -50,3 +50,23 @@ By **Mark Andrew**
 - **/lobby/invitation/revoke/{inviteId}** revokes an invitation. The input data is the ID of the invitation.
 - **/lobby/invitation/received** gets all received invitations for the current user.
 - **/lobby/invitation/sent** gets all sent invitations for the current user, optionally filtered by status.
+
+**Maven dependencies (we can also use Gradle too as an alternate)**
+
+| Dependency                    | Usage                                                                                                    |
+|-------------------------------|----------------------------------------------------------------------------------------------------------|
+| spring-boot-starter-actuator   | Adds production-ready features to the application, such as health checks, metrics, and monitoring.     |
+| spring-boot-starter-data-jpa   | Provides support for using Spring Data JPA to interact with a relational database using Java Persistence API (JPA). |
+| spring-boot-starter-web        | Sets up a basic web application with Spring MVC, including embedded Tomcat for web server functionality.  |
+| lombok                        | Simplifies Java code by providing annotations to automatically generate getters, setters, constructors, etc. during compile time. |
+| spring-boot-devtools           | Provides development-time tools like automatic application restart, live reload, and more for faster development iterations. |
+| mysql-connector-java           | MySQL Connector/J library for connecting to a MySQL database.                                           |
+| spring-boot-starter-test       | Includes testing dependencies for unit and integration testing.                                        |
+| h2                            | Embedded H2 database for testing and development purposes.                                             |
+| spring-boot-starter-security   | Sets up Spring Security to secure the application with authentication and authorization.               |
+| hibernate-core                 | The core Hibernate library for ORM (Object-Relational Mapping) functionality.                          |
+| jjwt-api                      | JSON Web Token (JWT) API library for handling JWTs.                                                    |
+| jjwt-impl                     | Implementation of the JWT API.                                                                        |
+| jjwt-jackson                  | Provides Jackson integration for parsing and creating JSON Web Tokens.                                 |
+| spring-boot-starter-thymeleaf | Integrates Thymeleaf templating engine for server-side rendering of web pages.                         |
+
