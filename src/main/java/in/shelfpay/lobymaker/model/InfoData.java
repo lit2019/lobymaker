@@ -14,5 +14,5 @@ import java.io.Serializable;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class InfoData implements Serializable {
     private String username;
-    private Long userId;
+    private Long JWTToken;
 }

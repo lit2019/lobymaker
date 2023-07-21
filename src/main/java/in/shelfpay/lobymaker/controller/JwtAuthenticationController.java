@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
@@ -46,6 +48,11 @@ public class JwtAuthenticationController {
         return ResponseEntity.ok(new JwtResponse(null));
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public ResponseEntity<?> logout(HttpServletRequest servletRequest) {
+        jwtTokenUtil.invalidateToken(servletRequest);
+        return ResponseEntity.ok("Logout successful");
+    }
     private void authenticate(String username, String password) throws Exception {
         Objects.requireNonNull(username);
         Objects.requireNonNull(password);

@@ -18,7 +18,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 
@@ -27,6 +26,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     private HashMap<String,String> userPWdMap = new HashMap<>();
 
     @Override
@@ -37,9 +37,7 @@ public class JwtUserDetailsService implements UserDetailsService {
             return new User(username,
                     passwordEncoder.encode(userEntity.getPassword()),
                     new ArrayList<>());
-
         } else {
-
             throw new UsernameNotFoundException("User not found with username: " + username);
 
         }

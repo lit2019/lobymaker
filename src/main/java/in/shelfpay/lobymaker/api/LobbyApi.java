@@ -11,7 +11,6 @@ import in.shelfpay.lobymaker.entities.UserEntity;
 import in.shelfpay.lobymaker.model.LobbyData;
 import in.shelfpay.lobymaker.model.LobbyForm;
 import in.shelfpay.lobymaker.utils.ConvertUtils;
-import in.shelfpay.lobymaker.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -96,7 +95,6 @@ public class LobbyApi {
 
     public List<UserEntity> getMembers(HttpServletRequest request, Long lobbyId) throws ApiException {
         Long userId = userApi.getUserIdFromToken(request.getHeader("Authorization").substring(7));
-        checkIfLobbyMember(lobbyId, userId);
         LobbyEntity lobbyEntity = getCheckLobbyById(lobbyId);
 
         List<InvitationEntity> lobbyPlayerMappingEntities = invitationRepository.findByLobbyIdAndInviteStatus(lobbyId, InviteStatus.ACCEPTED);

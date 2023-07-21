@@ -6,26 +6,29 @@ function refreshTable() {
   inviteStatus = status;
   getSentInvites();
 }
-
 function getSentInvites() {
-url = '/lobby/invitation/sent';
-if (inviteStatus!='null' && inviteStatus!=null){
-    url = url+'?status='+inviteStatus;
+var url = '/lobby/invitation/sent';
+if (inviteStatus != 'null' && inviteStatus != null) {
+  url = url + '?status=' + inviteStatus;
 }
 console.log(url);
-console.log("fetching invites")
-  $.ajax({
-    url: url,
-    method: 'GET',
-    success: function (invitations) {
-        console.log(invitations);
-      displayInvites(invitations);
-    },
-    error: function (error) {
-            message = error.responseJSON.message;
-            makeToast(false, message, null);
-    }
-  });
+console.log("fetching invites");
+$.ajax({
+  url: url,
+  method: 'GET',
+  beforeSend: function (xhr) {
+    // Include the JWT token in the 'Authorization' header as a bearer token
+    xhr.setRequestHeader('Authorization', 'Bearer ' + JWTToken);
+  },
+  success: function (invitations) {
+    console.log(invitations);
+    displayInvites(invitations);
+  },
+  error: function (error) {
+    message = error.responseJSON.message;
+    makeToast(false, message, null);
+  }
+});
 }
 
 function displayInvites(invitations){
@@ -48,24 +51,25 @@ function displayInvites(invitations){
       });
 }
 
-
-function revokeInvite(inviteId){
-    console.log("reached here")
-//    console.log(url)
-  $.ajax({
-    url: 'http://localhost:8080/lobby/invitation/revoke/'+inviteId,
-    method: 'PUT',
-    success: function (invitations) {
+ function revokeInvite(inviteId) {
+    console.log("reached here");
+    $.ajax({
+      url: 'http://localhost:8080/lobby/invitation/revoke/' + inviteId,
+      method: 'PUT',
+      beforeSend: function (xhr) {
+        // Include the JWT token in the 'Authorization' header as a bearer token
+        xhr.setRequestHeader('Authorization', 'Bearer ' + JWTToken);
+      },
+      success: function (invitations) {
         console.log(invitations);
         getSentInvites();
-    },
-    error: function (error) {
-            message = error.responseJSON.message;
-            makeToast(false, message, null);
-
-    }
-  });
-}
+      },
+      error: function (error) {
+        message = error.responseJSON.message;
+        makeToast(false, message, null);
+      }
+    });
+  }
 
 function init(){
     getSentInvites();

@@ -1,7 +1,6 @@
 package in.shelfpay.lobymaker.controller;
 
 import in.shelfpay.lobymaker.model.InfoData;
-import in.shelfpay.lobymaker.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,10 +34,6 @@ public class UIController {
 
 
     public static ModelAndView mav(String page, InfoData info) {
-        // Get current user
-
-        info.setUsername(UserUtil.username == null ? "" : UserUtil.username);
-        info.setUserId(UserUtil.userId);
 
         // Set info
         ModelAndView mav = new ModelAndView(page);
